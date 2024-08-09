@@ -4,7 +4,7 @@
 # netbeans project files
 nbproject
 
-web/uploads/icons/.
+web/uploads/icons
 
 # zend studio for eclipse project files
 .buildpath
