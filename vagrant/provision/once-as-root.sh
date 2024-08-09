@@ -26,8 +26,8 @@ info "Add the VM IP to the list of allowed IPs"
 awk -v ip=$IP -f /app/vagrant/provision/provision.awk /app/config/web.php
 
 info "Prepare root password for MySQL"
-debconf-set-selections <<< 'mariadb-server mysql-server/root_password password'
-debconf-set-selections <<< 'mariadb-server mysql-server/root_password_again password'
+debconf-set-selections <<< 'mysql-server mysql-server/root_password password'
+debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password'
 echo "Done!"
 
 info "Update OS software"
@@ -35,10 +35,10 @@ apt-get update
 apt-get upgrade -y
 
 info "Install additional software"
-apt-get install -y php7.2-curl php7.2-cli php7.2-intl php7.2-mysqlnd php7.2-gd php7.2-fpm php7.2-mbstring php7.2-xml unzip nginx mariadb-server-10.1 php.xdebug
+apt-get install -y php7.2-curl php7.2-cli php7.2-intl php7.2-mysqlnd php7.2-gd php7.2-fpm php7.2-mbstring php7.2-xml unzip nginx mysql-server php.xdebug
 
 info "Configure MySQL"
-sed -i 's/.*bind-address.*/bind-address = 0.0.0.0/' /etc/mysql/mariadb.conf.d/50-server.cnf
+sed -i 's/.*bind-address.*/bind-address = 0.0.0.0/' /etc/mysql/mysql.conf.d/mysqld.cnf
 mysql <<< "CREATE USER 'root'@'%' IDENTIFIED BY ''"
 mysql <<< "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%'"
 mysql <<< "DROP USER 'root'@'localhost'"

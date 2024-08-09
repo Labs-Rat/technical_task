@@ -5,7 +5,7 @@ required_plugins_installed = nil
 required_plugins = %w( vagrant-hostmanager vagrant-vbguest )
 required_plugins.each do |plugin|
   unless Vagrant.has_plugin? plugin
-    system "vagrant plugin install #{plugin}"
+    system "vagrant plugin install --plugin-clean-sources --plugin-source https://rubygems.org #{plugin}"
     required_plugins_installed = true
   end
 end
@@ -34,15 +34,16 @@ FileUtils.cp config[:example], config[:local] unless File.exist?(config[:local])
 options = YAML.load_file config[:local]
 
 # check github token
-if options['github_token'].nil? || options['github_token'].to_s.length != 40
-  puts "You must place REAL GitHub token into configuration:\n/yii2-app-basic/vagrant/config/vagrant-local.yml"
-  exit
-end
-
+# if options['github_token'].nil? || options['github_token'].to_s.length != 40
+#   puts "You must place REAL GitHub token into configuration:\n/yii2-app-basic/vagrant/config/vagrant-local.yml"
+#   exit
+# end
+ENV['VAGRANT_SERVER_URL'] = 'https://vagrant.elab.pro'
 # vagrant configurate
 Vagrant.configure(2) do |config|
+  config.env.enable
   # select the box
-  config.vm.box = 'bento/ubuntu-18.04'
+  config.vm.box = "ubuntu/18.04"
 
   # should we ask about box updates?
   config.vm.box_check_update = options['box_check_update']
