@@ -15,6 +15,9 @@ use yii\db\ActiveRecord;
  */
 class ParametersImages extends ActiveRecord
 {
+    const TYPE_ICON = 1;
+    const TYPE_ICON_GRAY = 2;
+
     /**
      * {@inheritdoc}
      */
@@ -47,5 +50,85 @@ class ParametersImages extends ActiveRecord
             'icon_type'    => 'Icon Type',
             'parameter_id' => 'Parameter ID',
         ];
+    }
+
+    public static function normalizeName(string $name): string
+    {
+        $name = mb_strtolower($name, 'UTF-8');
+        $name = str_replace(
+            [
+                'а',
+                'б',
+                'в',
+                'г',
+                'д',
+                'е',
+                'ё',
+                'ж',
+                'з',
+                'и',
+                'й',
+                'к',
+                'л',
+                'м',
+                'н',
+                'о',
+                'п',
+                'р',
+                'с',
+                'т',
+                'у',
+                'ф',
+                'х',
+                'ц',
+                'ч',
+                'ш',
+                'щ',
+                'ъ',
+                'ы',
+                'ь',
+                'э',
+                'ю',
+                'я'
+            ],
+            [
+                'a',
+                'b',
+                'v',
+                'g',
+                'd',
+                'e',
+                'e',
+                'zh',
+                'z',
+                'i',
+                'y',
+                'k',
+                'l',
+                'm',
+                'n',
+                'o',
+                'p',
+                'r',
+                's',
+                't',
+                'u',
+                'f',
+                'kh',
+                'ts',
+                'ch',
+                'sh',
+                'sch',
+                '',
+                'y',
+                '',
+                'e',
+                'yu',
+                'ya'
+            ],
+            $name
+        );
+
+        return preg_replace('/[^a-zA-Z_\-]/', '', $name);
     }
 }

@@ -17,7 +17,7 @@ class ParametersSearch extends Parameters
     public function rules(): array
     {
         return [
-            [['id', 'type'], 'integer'],
+            [['id'], 'integer'],
             [['title'], 'safe'],
         ];
     }
@@ -59,7 +59,7 @@ class ParametersSearch extends Parameters
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'type' => $this->type,
+//            'type' => $this->type,
         ]);
 
         $query->andFilterWhere(['like', 'title', $this->title]);

@@ -102,16 +102,22 @@ class ParametersController extends Controller
      * @param int $id ID
      * @return string|Response
      * @throws NotFoundHttpException if the model cannot be found
+     * @throws \yii\base\Exception
      */
-    public function actionUpdate($id)
+    public function actionUpdate(int $id)
     {
         $post = $this->request->post();
         $model = $this->findModel($id);
         $formParams['typesList'] = Parameters::$typesList;
 
-        if ($this->request->isPost && $model->load($post) && $model->save()) {
-//            $icon = $post['parameter-icon'] ?? null;
+        $formParams['iconSrc'] = $model->parameterIcon ? "/{$model->parameterIcon->path}" : '';
+        $formParams['iconGraySrc'] = $model->parameterIconGray ? "/{$model->parameterIconGray->path}" : '';
 
+        if ($this->request->isPost && $model->load($post) && $model->save()) {
+            $model->icon = UploadedFile::getInstance($model, 'icon');
+            $model->iconGray = UploadedFile::getInstance($model, 'iconGray');
+
+            $model->saveImage();
             return $this->redirect(['view', 'id' => $model->id]);
         }
 

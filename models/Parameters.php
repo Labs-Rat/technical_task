@@ -2,7 +2,6 @@
 
 namespace app\models;
 
-use app\helpers\DumpHelper;
 use yii\base\Exception;
 use yii\db\ActiveRecord;
 use yii\helpers\FileHelper;
@@ -14,6 +13,9 @@ use yii\web\UploadedFile;
  * @property int $id
  * @property string $title
  * @property int $type
+ *
+ * @property ParametersImages $parameterIcon
+ * @property ParametersImages $parameterIconGray
  */
 class Parameters extends ActiveRecord
 {
@@ -100,16 +102,64 @@ class Parameters extends ActiveRecord
 
         if ($this->validate()) {
             if ($this->icon) {
-                $this->icon->saveAs("{$path}/{$this->icon->baseName}.{$this->icon->extension}");
+                $normalizedName = ParametersImages::normalizeName($this->icon->baseName);
+                $fileName = "{$this->id}_icon";
+
+                if ($this->parameterIcon) {
+                    $oldFilePath = $this->parameterIcon->path;
+
+                    if (file_exists($oldFilePath)) {
+                        unlink($oldFilePath);
+                    }
+                }
+
+                $parametersImage = $this->parameterIcon ?? new ParametersImages();
+                $parametersImage->parameter_id = $this->id;
+                $parametersImage->path = "{$path}/{$fileName}.{$this->icon->extension}";
+                $parametersImage->primary_name = $normalizedName;
+                $parametersImage->icon_type = ParametersImages::TYPE_ICON;
+                $parametersImage->save();
+
+                $this->icon->saveAs("{$path}/{$fileName}.{$this->icon->extension}");
             }
-            /*@TODO добавить преобразование исходного имени, добавить сохранение информации в сводную таблицу*/
+
             if ($this->iconGray) {
-                $this->iconGray->saveAs("{$path}/{$this->iconGray->baseName}.{$this->iconGray->extension}");
+                $normalizedName = ParametersImages::normalizeName($this->iconGray->baseName);
+                $fileName = "{$this->id}_iconGray";
+
+                if ($this->parameterIcon) {
+                    $oldFilePath = $this->parameterIconGray->path;
+
+                    if (file_exists($oldFilePath)) {
+                        unlink($oldFilePath);
+                    }
+                }
+
+                $parametersImage = $this->parameterIconGray ?? new ParametersImages();
+                $parametersImage->parameter_id = $this->id;
+                $parametersImage->path = "{$path}/{$fileName}.{$this->iconGray->extension}";
+                $parametersImage->primary_name = $normalizedName;
+                $parametersImage->icon_type = ParametersImages::TYPE_ICON_GRAY;
+                $parametersImage->save();
+
+                $this->iconGray->saveAs("{$path}/{$fileName}.{$this->iconGray->extension}");
             }
 
             return true;
         } else {
             return false;
         }
+    }
+
+    public function getParameterIcon()
+    {
+        return $this->hasOne(ParametersImages::class, ['parameter_id' => 'id'])
+            ->where('icon_type = :type', [':type' => ParametersImages::TYPE_ICON]);
+    }
+
+    public function getParameterIconGray()
+    {
+        return $this->hasOne(ParametersImages::class, ['parameter_id' => 'id'])
+            ->where('icon_type = :type', [':type' => ParametersImages::TYPE_ICON_GRAY]);
     }
 }
