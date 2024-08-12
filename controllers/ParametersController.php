@@ -76,6 +76,8 @@ class ParametersController extends Controller
         $model = new Parameters();
         $post = $this->request->post();
         $formParams['typesList'] = Parameters::$typesList;
+        $formParams['iconSrc'] = '';
+        $formParams['iconGraySrc'] = '';
 
         if ($this->request->isPost) {
             if ($model->load($post) && $model->save()) {

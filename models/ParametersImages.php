@@ -18,6 +18,11 @@ class ParametersImages extends ActiveRecord
     const TYPE_ICON = 1;
     const TYPE_ICON_GRAY = 2;
 
+    public static array $types = [
+        self::TYPE_ICON      => 'icon',
+        self::TYPE_ICON_GRAY => 'icon_gray',
+    ];
+
     /**
      * {@inheritdoc}
      */
